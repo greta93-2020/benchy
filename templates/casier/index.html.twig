@@ -1,0 +1,174 @@
+{% extends 'base.html.twig' %}
+{# {% for role in app.user.roles %}
+    {% if role == 'ROLE_SUPER_ADMIN' %} {% set security = 1 %} {% endif %}
+    {% if role == 'ROLE_ADMIN' %} {% set security = 1 %} {% endif %}
+ {% endfor %}
+#}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-primary">
+                <div class="box-body" style="overflow-x: auto">
+                  <div class="pageLengthDiv">
+                    {# {% if security %} #}
+                        <a class="btn btn-lg btn-primary" href="{{ path(path_add) }}">{% trans %}Ajouter Casier{% endtrans %}</a>
+                    {# {% else %}
+                        <a class="btn btn-lg btn-primary" href="{{ path('equipment_generic_create') }}" disabled="disabled" onclick="return false;">{% trans %}Add Generic{% endtrans %}</a>
+                    {% endif %} #}
+                  </div>
+                    <table id="main_table" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th class="filter-select filter-onlyAvail">{% trans %}Nom{% endtrans %}</th>
+                            <th class="filter-select filter-onlyAvail">{% trans %}Type{% endtrans %}</th>
+                            <th class="filter-select filter-onlyAvail">{% trans %}Ordre{% endtrans %}</th>
+                            <th class="filter-select filter-onlyAvail">{% trans %}Tag{% endtrans %}</th>
+                            <th class="filter-select filter-onlyAvail">{% trans %}Remarque{% endtrans %}</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        {% for item in list %}
+                            <tr>
+                                <td>{{ item.nom }}</td>
+                                <td>
+                                    {% if item.type is not null %}
+                                        {{item.type.nom}}
+                                    {% endif %}
+                                </td>
+                                <td>{{ item.ordre }}</td>
+                                <td>{% if item.tag %}
+                                        <span class="green">Activé</span>
+                                    {% else %}
+                                        <span class="red">Désactivé</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ item.remarque }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{{ path(path_update,{'id': item.id}) }}" class="btn btn-warning"><i class="fa fa-edit fa-fw"></i> {% trans %}Voir/Modifier{% endtrans %}</a>
+                                        {#{% if security == 1 %}#}
+                                            <a href="{{ path(path_delete,{'id': item.id}) }}" class="btn btn-danger" data-toggle="confirm_delete"><i class="fa fa-trash fa-fw"></i> {% trans %}Supprimer{% endtrans %}</a>
+                                        {#{% else %}
+                                            <a href="{{ path(path_delete,{'id': item.id}) }}" class="btn btn-danger" disabled="disabled" onclick="return false;" ><i class="fa fa-trash fa-fw"></i> {% trans %}Delete{% endtrans %}</a>
+                                        {% endif %}#}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+
+{% block stylesheets %}
+<style>
+</style>
+{% endblock %}
+
+{% block javascripts %}
+
+<script type="text/javascript">
+$('#main_table').DataTable({
+            ordering: false,
+            order: [[ 1, "asc" ]],
+            pageLength: -1,
+            stateSave: false,
+            dom: 'Blfrtip',
+            lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "Tout"] ],
+            language: {
+                "decimal":        "",
+                "emptyTable":     "La liste est vide",
+                "info":           "Affichage de _START_ à _END_ de _TOTAL_ entrées",
+                "infoEmpty":      "Affichage de 0 à 0 de 0 entrée",
+                "infoFiltered":   "(Filtrage à partir de _MAX_ entrées)",
+                "infoPostFix":    "",
+                "thousands":      ",",
+                "lengthMenu":     "Afficher _MENU_ entrées",
+                "loadingRecords": "En chargement...",
+                "processing":     "En cours...",
+                "search":         "Rechercher:",
+                "zeroRecords":    "Aucun élément retrouvé",
+                "paginate": {
+                    "first":      "Première",
+                    "last":       "Dernière",
+                    "next":       "Suivante",
+                    "previous":   "Précédente"
+                },
+                "aria": {
+                    "sortAscending":  ": activate to sort column ascending",
+                    "sortDescending": ": activate to sort column descending"
+                }
+            },
+            buttons: [
+                {
+                    extend: 'pdfHtml5',
+                    orientation: 'landscape',
+                    pageSize: 'A4',
+                    exportOptions: {
+                        columns: [ 0,1,2,3,4 ]
+                    }
+                },
+                {
+                    extend: 'excelHtml5',
+                    exportOptions: {
+                        columns: [ 0,1,2,3,4 ]
+                    }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: [ 0,1,2,3,4 ]
+                    }
+                }
+
+            ]
+        });
+
+        $(function() {
+            $("#main_table").tablesorter({
+                theme: 'blue',
+                widthFixed : false,
+                widgets: ["zebra", "filter", "stickyHeaders"],
+                widgetOptions : {
+                    filter_cssFilter   : '',
+                    filter_childRows   : false,
+                    filter_hideFilters : false,
+                    filter_ignoreCase  : true,
+                    filter_saveFilters : false,
+                    filter_searchDelay : 300,
+                    filter_startsWith  : false,
+                }
+            });
+            // $('#main_table').on( 'length.dt', function ( e, settings, len ) {
+            //     console.log( 'New page length: '+len );
+            //
+            //     $('#main_table').DataTable().trigger('update');
+            //     $('#main_table').tablesorter().trigger('search', false);
+            //     $('#main_table').tablesorter().trigger('applyWidgets');
+            //     $('#main_table').tablesorter().trigger('update');
+            //
+            // } );
+            $('#main_table').on( 'draw.dt', function () {
+                $('#main_table').tablesorter().trigger('applyWidgets');
+                $('#main_table').tablesorter().trigger('update');
+            } );
+        });
+        {% for message in app.flashes('success') %}
+            bootbox.alert("<h4>{{message}}</h4>");
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            bootbox.alert("<h4 class='red'>{{message}}</h4>");
+        {% endfor %}
+</script>
+
+{% endblock %}

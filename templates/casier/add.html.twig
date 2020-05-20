@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+{# {% for role in app.user.roles %}
+    {% if role == 'ROLE_SUPER_ADMIN' %} {% set security = 1 %} {% endif %}
+    {% if role == 'ROLE_ADMIN' %} {% set security = 1 %} {% endif %}
+ {% endfor %}
+#}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-primary">
+                <div class="box-body" style="overflow-x: auto">
+                    {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                    <div class="pull-left">
+                        <button type="button" class="btn btn-default" name="backBtn" id="backBtn"><i class="fa fa-sign-out"></i> Fermer</button>
+                    </div>
+                    <div class="pull-right">
+                        <button type="submit" class="btn btn-success" name="saveBtn" id="saveBtn"><i class="fa fa-save"></i> Enregistrer</button>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+                <!-- /.box-body -->
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+
+{% block stylesheets %}
+<style>
+</style>
+{% endblock %}
+
+{% block javascripts %}
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $( "#casiers_tag" ).attr("checked", "checked");
+    $('#backBtn').click(function(event){
+        window.location ="{{path(path_list)}}";
+    });
+});
+
+</script>
+
+{% endblock %}
